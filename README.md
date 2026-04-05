@@ -1,9 +1,4 @@
 # Passage — Password Decay Tracker
-![Python](https://img.shields.io/badge/python-3.7+-blue.svg)
-![Tkinter](https://img.shields.io/badge/GUI-Tkinter-green.svg)
-![API](https://img.shields.io/badge/API-ZenQuotes-orange.svg)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
 
 Track password age, detect reuse, and check breach exposure without ever storing plaintext passwords.
 
