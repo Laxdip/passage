@@ -1,6 +1,6 @@
 # Passage — Password Decay Tracker
 
-Track password age, detect reuse, and check breach exposure — without ever storing plaintext passwords.
+Track password age, detect reuse, and check breach exposure without ever storing plaintext passwords.
 
 ---
 
@@ -29,7 +29,7 @@ pip install -e .
 
 ## Quick Start
 
-> **PowerShell — set this every session:**
+> **PowerShell - set this every session:**
 > ```powershell
 > $env:PYTHONPATH = "src"
 > ```
@@ -119,7 +119,7 @@ AES-256 key (Fernet)
 Encrypted SQLite (~/.passage/passage.db)
 ```
 
-- Vault decrypted **in memory only** — never written as plaintext
+- Vault decrypted **in memory only** - never written as plaintext
 - Re-encrypted on every exit
 - 3 wrong password attempts → 5-second cooldown
 - Auto-lock after 5 minutes (configurable)
