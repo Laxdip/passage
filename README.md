@@ -1,95 +1,106 @@
-# 🔐 Passage – Password Decay Tracker
+# Passage — Password Decay Tracker
 
-A production-grade CLI tool for tracking password age, detecting reuse, and checking breach exposure — **without ever storing plaintext passwords**.
+Track password age, detect reuse, and check breach exposure — without ever storing plaintext passwords.
 
 ---
 
 ## Features
 
-- **Password age tracking** with GREEN / YELLOW / ORANGE / RED risk levels
-- **HIBP breach checking** via k-anonymity (only first 5 chars of SHA-1 sent)
-- **Reuse detection** using fuzzy SimHash — no plaintext stored or compared
-- **Encrypted vault** — AES-256 via PBKDF2-derived key from master password
-- **Beautiful Rich terminal output** with summary dashboards
-- **HTML / CSV / JSON reports**
-- **Password generator** with strength scoring
-- **Security audit** for weak or old passwords
-- **Shell completion** for bash and zsh
+- **Password age tracking** — GREEN / YELLOW / ORANGE / RED risk levels
+- **Breach checking** — HIBP k-anonymity (only first 5 chars of SHA-1 sent)
+- **Reuse detection** — SimHash fuzzy fingerprint, no plaintext stored
+- **Encrypted vault** — AES-256 via PBKDF2-derived master password key
+- **Rich terminal output** — dashboards, tables, summaries
+- **Reports** — HTML, CSV, JSON export
+- **Password generator** — with strength scoring
+- **Security audit** — flags weak or old passwords
 
 ---
 
 ## Installation
 
-### From source
-
-```bash
-git clone https://github.com/yourname/passage.git
+```powershell
+unzip passage.zip
 cd passage
-pip install -e ".[dev]"
-```
-
-### With pipx (recommended)
-
-```bash
-pipx install passage-cli
+pip install -e .
 ```
 
 ---
 
 ## Quick Start
 
-```bash
-# Add an account (you'll be prompted for the password)
-passage add --name "Google" --url "google.com" --username "me@gmail.com" --category email
+> **PowerShell — set this every session:**
+> ```powershell
+> $env:PYTHONPATH = "src"
+> ```
 
-# List all accounts
-passage list
+```powershell
+# Add an account
+python src\passage\cli.py account add --name "Google" --url google.com --username you@gmail.com --category email
 
-# Check all passwords for age, breaches, reuse
-passage check --all
+# List accounts
+python src\passage\cli.py account list
 
-# Check a single account
-passage check --id 1
+# Check all passwords (age, breaches, reuse)
+python src\passage\cli.py check check --all
 
-# Find only reused passwords
-passage check --reused
+# Check single account
+python src\passage\cli.py check check --id 1
+
+# Find reused passwords only
+python src\passage\cli.py check check --reused
 
 # Generate a strong password
-passage generate --length 20
+python src\passage\cli.py generate generate --length 20
 
-# Generate and immediately replace passwords for accounts 1, 2, 5
-passage generate --length 20 --replace 1,2,5
+# Generate and replace password for account id 1
+python src\passage\cli.py generate generate --length 20 --replace 1
 
-# Run a security audit (weak/old passwords)
-passage audit --weak
+# Security audit
+python src\passage\cli.py audit audit --weak
 
-# Reports
-passage report                            # Rich table
-passage report --format json              # JSON to stdout
-passage report --format csv               # CSV to stdout
-passage report --export report.html       # Full HTML dashboard
-passage report --summary                  # One-line summary
+# Report (terminal table)
+python src\passage\cli.py report report
 
-# Configuration
-passage config --show
-passage config --reset
+# Report (export to HTML)
+python src\passage\cli.py report report --export health.html
 
-# Generate a cron line for daily checks
-passage remind
+# Report (one-line summary)
+python src\passage\cli.py report report --summary
+
+# Show / reset config
+python src\passage\cli.py config config --show
+python src\passage\cli.py config config --reset
 ```
 
 ---
 
-## Data Model
+## Categories
+`email` · `social` · `finance` · `work` · `dev` · `other`
+
+---
+
+## Risk Levels
+
+| Level | Age |
+|---|---|
+| 🟢 GREEN | < 90 days |
+| 🟡 YELLOW | 90 – 180 days |
+| 🟠 ORANGE | 180 – 365 days |
+| 🔴 RED | 365+ days |
+
+---
+
+## What Gets Stored
 
 Passage stores **zero plaintext passwords**. Only:
 
-| What | Why |
-|------|-----|
-| `bcrypt` hash | Change detection (did the password change?) |
-| `fuzzy_hash` (SimHash 64-bit) | Reuse detection without comparing plaintext |
-| `sha1_prefix` (first 5 chars) | HIBP k-anonymity lookup |
-| Metadata (age, category, username) | Reporting and alerts |
+| Stored | Purpose |
+|---|---|
+| `bcrypt` hash | Detect if password changed |
+| `fuzzy_hash` (SimHash 64-bit) | Reuse detection without plaintext |
+| `sha1_prefix` (first 5 chars) | HIBP breach lookup |
+| Metadata (age, category, username) | Reporting & alerts |
 
 ---
 
@@ -102,22 +113,30 @@ Master Password
 PBKDF2-HMAC-SHA256 (310,000 iterations)
       │
       ▼
-AES-256 key (via Fernet)
+AES-256 key (Fernet)
       │
       ▼
-Encrypted SQLite on disk (~/.passage/passage.db)
+Encrypted SQLite (~/.passage/passage.db)
 ```
 
-- The vault is decrypted **entirely in memory** for the duration of each CLI command.
-- Re-encrypted and written to disk on exit.
-- Auto-lock after 5 minutes (configurable).
-- 3 wrong master-password attempts → 5-second cooldown.
+- Vault decrypted **in memory only** — never written as plaintext
+- Re-encrypted on every exit
+- 3 wrong password attempts → 5-second cooldown
+- Auto-lock after 5 minutes (configurable)
+
+---
+
+## Reset / Clear All Data
+
+```powershell
+Remove-Item -Recurse -Force "$env:USERPROFILE\.passage"
+```
 
 ---
 
 ## Configuration
 
-Default config is created at `~/.passage/config.yaml` on first run. See `config.example.yaml` for all options.
+Located at `~/.passage/config.yaml` — created automatically on first run.
 
 ```yaml
 security:
@@ -137,65 +156,31 @@ alerts:
 
 ---
 
-## Running Tests
-
-```bash
-pip install -e ".[dev]"
-pytest tests/ -v --cov=passage
-```
-
-Tests cover:
-- Fuzzy hash comparison and similarity
-- bcrypt roundtrip
-- Password strength scoring
-- Password generation
-- Database CRUD (zero accounts, many accounts, edge cases)
-- HIBP parsing and cache logic (mocked)
-- Health score calculation
-- Performance: 500 accounts insert + list
-
----
-
-## Shell Completion
-
-```bash
-# Bash
-source scripts/completion.sh bash
-
-# Zsh
-source scripts/completion.sh zsh
-
-# Or use Typer's built-in
-passage --install-completion
-```
-
----
-
 ## File Structure
 
 ```
 passage/
 ├── src/passage/
-│   ├── cli.py                  # Main Typer app
+│   ├── cli.py                  # Main entry point
 │   ├── commands/
 │   │   ├── account.py          # add, list, edit, remove
-│   │   ├── check.py            # check --all / --id / --reused
-│   │   ├── report.py           # report --format table|json|csv|html
+│   │   ├── check.py            # health check
+│   │   ├── report.py           # reports (table/json/csv/html)
 │   │   ├── tools.py            # generate, audit
 │   │   └── config_cmd.py       # config, remind
 │   ├── core/
 │   │   ├── config.py           # YAML config + defaults
 │   │   ├── crypto.py           # PBKDF2, Fernet, bcrypt, SimHash
 │   │   ├── database.py         # SQLite schema + CRUD
-│   │   ├── hibp.py             # HIBP async batch checking
-│   │   ├── session.py          # Master password prompting + VaultSession
-│   │   └── strength.py         # Strength scoring + password generation
+│   │   ├── hibp.py             # HIBP breach checking
+│   │   ├── session.py          # Master password + VaultSession
+│   │   └── strength.py         # Strength scoring + generator
 │   └── utils/
-│       └── render.py           # Rich terminal rendering helpers
+│       └── render.py           # Rich terminal rendering
 ├── tests/
-│   └── test_passage.py         # Full test suite (35+ tests)
+│   └── test_passage.py         # 39 tests
 ├── scripts/
-│   └── completion.sh           # Shell completion installer
+│   └── completion.sh           # bash/zsh completion
 ├── config.example.yaml
 ├── pyproject.toml
 ├── requirements.txt
@@ -204,6 +189,19 @@ passage/
 
 ---
 
+## Tests
+
+```bash
+pip install -e ".[dev]"
+pytest tests/ -v --cov=passage
+```
+
+Covers: crypto, bcrypt, SimHash, strength scoring, password generation, database CRUD, HIBP cache logic, health scoring, and performance (500 accounts).
+
+---
+
 ## License
 
 MIT
+##
+Prasad
