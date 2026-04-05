@@ -3,6 +3,13 @@
 Track password age, detect reuse, and check breach exposure without ever storing plaintext passwords.
 
 ---
+## Screenshots
+
+### Account Management & Health Check
+![Health Check](screenshots/health_check.png)
+
+### Adding an Account
+![Add Account](screenshots/add_account.png)
 
 ## Features
 
