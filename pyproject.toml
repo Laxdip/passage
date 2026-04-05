@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "passage-cli"
+version = "1.0.0"
+description = "Production-grade password decay tracker CLI"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Passage CLI" }]
+keywords = ["password", "security", "cli", "hibp"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Security",
+]
+dependencies = [
+    "typer[all]>=0.12.0",
+    "rich>=13.7.0",
+    "bcrypt>=4.1.0",
+    "requests>=2.31.0",
+    "pyyaml>=6.0.1",
+    "cryptography>=42.0.0",
+    "aiohttp>=3.9.0",
+    "click>=8.1.7",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "responses>=0.25.0",
+]
+
+[project.scripts]
+passage = "passage.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

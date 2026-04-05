@@ -1,0 +1,40 @@
+security:
+  # PBKDF2 iterations for master password key derivation (NIST recommends ≥310,000)
+  pbkdf2_iterations: 310000
+
+  # Fuzzy-hash similarity threshold for reuse detection (0.0–1.0)
+  # Lower = more aggressive (more false positives), higher = stricter
+  reuse_threshold: 0.85
+
+  # Lock the vault after this many minutes of inactivity
+  auto_lock_minutes: 5
+
+hibp:
+  # Enable Have I Been Pwned breach checks
+  enabled: true
+
+  # Cache HIBP results for this many days before re-querying
+  cache_days: 30
+
+  # HTTP timeout for HIBP API calls (seconds)
+  timeout_seconds: 10
+
+alerts:
+  # Days after which a password triggers a WARNING
+  age_warning_days: 90
+
+  # Days after which a password triggers a CRITICAL alert
+  age_critical_days: 365
+
+  # Notify when reused passwords are detected
+  notify_reused: true
+
+  # Notify when breached passwords are detected
+  notify_breached: true
+
+output:
+  # Enable Rich color output
+  color: true
+
+  # Rich table style: rounded, simple, minimal, heavy, double, etc.
+  table_style: "rounded"
