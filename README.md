@@ -1,4 +1,4 @@
-# Passage — Password Decay Tracker
+# Passage - Password Decay Tracker
 
 Track password age, detect reuse, and check breach exposure without ever storing plaintext passwords.
 
