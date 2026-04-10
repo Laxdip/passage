@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash 
 # Passage shell completion installer
 # Usage: source scripts/completion.sh   OR   add to ~/.bashrc / ~/.zshrc
 
