@@ -1,4 +1,4 @@
-security:
+security: 
   # PBKDF2 iterations for master password key derivation (NIST recommends ≥310,000)
   pbkdf2_iterations: 310000
 
